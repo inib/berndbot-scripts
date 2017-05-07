@@ -284,6 +284,7 @@
          * @commandpath rank del - Deletes customized rank.
          */
         if (command.equalsIgnoreCase('rank')) {
+            // if user asks for more than only !rank
             if (args[0]) {
                 if (args[0].equalsIgnoreCase('del')) {
                     if (inidb.exists('viewerRanks', sender.toLowerCase())) {
@@ -326,9 +327,11 @@
                 }
             }
 
+            // user not found in the time table
             if (ranksTimeTable === undefined) {
                 loadRanksTimeTable();
             }
+            // user has no rank in the time table
             if (ranksTimeTable.length == 0) {
                 $.say($.whisperPrefix(sender) + $.lang.get('ranks.rank.404'));
                 return;
@@ -343,21 +346,23 @@
                 }
             }
 
+            // if user has custom rank, WHISPER him his custom rank
             if ($.inidb.exists('viewerRanks', username.toLowerCase())) {
-                $.say($.lang.get('ranks.rank.customsuccess', username, $.inidb.get('viewerRanks', username.toLowerCase())));
+                $.say($.whisperPrefix(sender) + $.lang.get('ranks.rank.customsuccess', username, $.inidb.get('viewerRanks', username.toLowerCase())));
                 return;
             }
 
+            // if user has achieved a level in the rank system, WHISPER answer
             if (userLevel <= ranksTimeTable.length - 2) {
                 nextLevel = parseInt(userLevel) + 1;
                 timeUntilNextRank = parseInt(ranksTimeTable[nextLevel]) - userTime;
                 if (userLevel == -1) {
-                    $.say($.lang.get('ranks.rank.norank.success', username, timeUntilNextRank, $.inidb.get('ranksMapping', ranksTimeTable[nextLevel].toString())));
+                    $.say($.whisperPrefix(sender) + $.lang.get('ranks.rank.norank.success', username, timeUntilNextRank, $.inidb.get('ranksMapping', ranksTimeTable[nextLevel].toString())));
                 } else {
-                    $.say($.lang.get('ranks.rank.success', username, $.inidb.get('ranksMapping', ranksTimeTable[userLevel].toString()), timeUntilNextRank, $.inidb.get('ranksMapping', ranksTimeTable[nextLevel].toString())));
+                    $.say($.whisperPrefix(sender) + $.lang.get('ranks.rank.success', username, $.inidb.get('ranksMapping', ranksTimeTable[userLevel].toString()), timeUntilNextRank, $.inidb.get('ranksMapping', ranksTimeTable[nextLevel].toString())));
                 }
             } else {
-                $.say($.lang.get('ranks.rank.maxsuccess', username, $.inidb.get('ranksMapping', ranksTimeTable[userLevel].toString())));
+                $.say($.whisperPrefix(sender) + $.lang.get('ranks.rank.maxsuccess', username, $.inidb.get('ranksMapping', ranksTimeTable[userLevel].toString())));
             }
             return;
         }
